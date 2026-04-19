@@ -2,24 +2,18 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# -----------------------------
-# Load saved files
-# -----------------------------
+
 model = joblib.load("model.pkl")
 scaler = joblib.load("scaler.pkl")
 encoders = joblib.load("encoders.pkl")
 target_encoder = joblib.load("target_encoder.pkl")
 
-# -----------------------------
-# UI Title
-# -----------------------------
+
 st.title("🍔 Obesity Level Prediction App")
 
 st.write("Fill in your details:")
 
-# -----------------------------
-# Inputs
-# -----------------------------
+
 gender = st.selectbox("Gender", ["Male", "Female"])
 age = st.number_input("Age", 10, 100, 25)
 height = st.number_input("Height (meters)", 1.0, 2.5, 1.7)
@@ -47,9 +41,7 @@ calc = st.selectbox("Alcohol Consumption (CALC)", ["no", "Sometimes", "Frequentl
 mtrans = st.selectbox("Transportation (MTRANS)", 
                       ["Walking", "Bike", "Motorbike", "Public_Transportation", "Automobile"])
 
-# -----------------------------
-# Prediction
-# -----------------------------
+
 if st.button("Predict"):
 
     input_dict = {
@@ -73,29 +65,20 @@ if st.button("Predict"):
 
     input_df = pd.DataFrame([input_dict])
 
-    # -----------------------------
-    # Apply Encoding
-    # -----------------------------
+    
     for col in input_df.columns:
         if col in encoders:
             input_df[col] = encoders[col].transform(input_df[col])
 
-    # -----------------------------
-    # Apply Scaling
-    # -----------------------------
+  
     input_scaled = scaler.transform(input_df)
 
-    # -----------------------------
-    # Prediction
-    # -----------------------------
+  
     pred = model.predict(input_scaled)
 
-    # Decode result
     result = target_encoder.inverse_transform(pred)[0]
 
-    # -----------------------------
-    # Show Result
-    # -----------------------------
+   
     st.success(f"🎯 Predicted Obesity Level: {result}")
 
     # Extra Message
